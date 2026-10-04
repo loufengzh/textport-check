@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "textport-check"
+version = "0.1.0"
+description = "Read-only byte-encoding compatibility matrices for declared script and text consumers"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "loufengzh"}]
+keywords = ["encoding", "powershell", "shebang", "utf8", "ci"]
+classifiers = ["Programming Language :: Python :: 3", "License :: OSI Approved :: MIT License"]
+
+[project.scripts]
+textport-check = "textport_check.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

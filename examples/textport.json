@@ -1,0 +1,1 @@
+{"version":1,"files":[{"path":"greeting.ps1","profiles":["powershell51-script","utf8-no-bom"]},{"path":"hello.sh","profiles":["posix-direct-script","utf8-no-bom"]}]}
