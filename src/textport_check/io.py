@@ -13,13 +13,17 @@ def safe_read(root: Path, relative: str, limit: int) -> bytes:
     path = Path(relative)
     if path.is_absolute() or PureWindowsPath(relative).drive or PureWindowsPath(relative).root or ":" in relative or not path.parts or ".." in path.parts or ".." in PureWindowsPath(relative).parts or "\x00" in relative:
         raise InputError("Only relative file paths without '..' are allowed.")
-    root = Path(os.path.abspath(root))
+    # Preserve '..': lexical normalization could erase a link or an invalid
+    # component and silently select a different directory before validation.
+    root = Path(root).absolute()
     # Reject links in root and its ancestors too. POSIX traversal below uses nofollow
     # at every component; Windows checks are point-in-time, not a hostile-race sandbox.
     for ancestor in reversed((root, *root.parents)):
         info = ancestor.lstat()
         if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
             raise InputError("Symlinks and reparse points are not supported.")
+        if not stat.S_ISDIR(info.st_mode):
+            raise InputError("Root path components must be directories.")
     if os.name == "posix" and os.open in os.supports_dir_fd:
         fd = os.open(root.anchor, os.O_RDONLY | os.O_DIRECTORY)
         try:
