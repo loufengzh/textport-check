@@ -45,6 +45,22 @@ class CliTests(unittest.TestCase):
         config.write_text('{"version":1,"version":1,"files":[]}')
         self.assertEqual(self.call('--config', str(config))[0], 2)
 
+    def test_empty_config_is_not_omission(self):
+        for option in (("--config", ""), ("--config=",)):
+            for direct in ((), ("--root", str(self.root), "--profile", "utf8-no-bom", "a")):
+                with self.subTest(option=option, direct=direct), patch("textport_check.cli.safe_read") as read:
+                    code, output, error = self.call(*option, *direct)
+                    self.assertEqual(code, 2)
+                    self.assertEqual(output, "")
+                    self.assertIn("--config must not be empty", error)
+                    read.assert_not_called()
+
+    def test_whitespace_config_filename_is_literal(self):
+        (self.root / "a").write_bytes(b"ok")
+        config = self.root / " "
+        config.write_text(json.dumps({"version": 1, "files": [{"path": "a", "profiles": ["utf8-no-bom"]}]}))
+        self.assertEqual(self.call("--config", str(config))[0], 0)
+
     def test_bad_config(self):
         config = self.root / 'check.json'
         for data in (b'\xff', b'{}', b'[]', b'{"version":true,"files":[]}', b'{"version":1,"files":[{"path":"../x","profiles":["utf8-no-bom"]}]}'):

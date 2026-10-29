@@ -24,7 +24,9 @@ def _parser():
 def _entries(args):
     if not 1 <= args.max_bytes <= 67108864:
         raise ValueError("--max-bytes must be between 1 and 67108864")
-    if args.config:
+    if args.config is not None:
+        if args.config == "":
+            raise ValueError("--config must not be empty")
         if args.files or args.profile or args.root != ".":
             raise ValueError("--config cannot be combined with files, --profile or --root")
         config = Path(args.config)

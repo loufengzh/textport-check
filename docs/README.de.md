@@ -59,3 +59,5 @@ python -m build
 Tests prüfen mehrsprachige Bytes, UTF-16/32, ungültige/abgeschnittene Sequenzen, NUL, shebangs, Konflikte, Pfade/Limits, deterministisches JSON und unveränderte Quelldateien. Eigene harmlose Laufzeitbeispiele werden in CI unter Linux direkt und unter echtem Windows PowerShell 5.1 (ASCII und UTF-8 BOM) ausgeführt. Verhalten ohne BOM wird codepageabhängig protokolliert. Das normale CLI führt niemals Nutzerskripte aus. Separate Linux/Windows-Jobs testen Units und Wheel-Installation. Lokaler Linux-Erfolg beweist keinen Windows-CI-Erfolg; den veröffentlichten Commit prüfen.
 
 Beiträge: enge, belegte Verträge, Regressionstests und Pflege aller vier Sprachen. Sicherheitsprobleme privat über GitHub melden, falls verfügbar, sonst Issue ohne vertrauliche Inhalte. MIT; keine kopierten Drittanbieterquellen oder Testbeispiele.
+
+Ein ausdrücklich leerer Wert `--config ""` oder `--config=` ist eine ungültige Konfiguration (Exitcode 2, kein Bericht), kein ausgelassener Parameter. Die Prüfung erfolgt vor dem Lesen von Dateien, auch bei zusätzlichen direkten Datei- und Profilargumenten. Leerzeichen in einem nicht leeren Pfad bleiben unverändert.
