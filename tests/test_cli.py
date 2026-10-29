@@ -57,9 +57,22 @@ class CliTests(unittest.TestCase):
 
     def test_whitespace_config_filename_is_literal(self):
         (self.root / "a").write_bytes(b"ok")
-        config = self.root / " "
+        config = self.root / "check config.json"
         config.write_text(json.dumps({"version": 1, "files": [{"path": "a", "profiles": ["utf8-no-bom"]}]}))
         self.assertEqual(self.call("--config", str(config))[0], 0)
+
+    @unittest.skipUnless(os.name == "posix", "whitespace-only filenames require POSIX")
+    def test_whitespace_only_config_filename_is_literal(self):
+        (self.root / "a").write_bytes(b"ok")
+        config = self.root / " "
+        config.write_text(json.dumps({"version": 1, "files": [{"path": "a", "profiles": ["utf8-no-bom"]}]}))
+        previous = Path.cwd()
+        try:
+            os.chdir(self.root)
+            self.assertEqual(self.call("--config", " ")[0], 0)
+            self.assertEqual(self.call("--config= ")[0], 0)
+        finally:
+            os.chdir(previous)
 
     def test_bad_config(self):
         config = self.root / 'check.json'
